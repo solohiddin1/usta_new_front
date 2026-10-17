@@ -5,7 +5,7 @@ import { Pagination, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
-import { t, getUser } from '../i18n/translations';
+import { t, getUser, formatPrice } from '../i18n/translations';
 import { api, getImageUrl } from '../api/client';
 
 export default function ProductDetail() {
@@ -140,11 +140,11 @@ export default function ProductDetail() {
                   <div className="cat_r">
                     <div className="cat_r_h">{t('h_5')}</div>
                     <div className="cat_r_p">
-                      {product.price} <span>{t('h_4')}</span>
+                      {formatPrice(product.price)} <span>{t('h_4')}</span>
                     </div>
                     <div className="cat_r_h bonus">{t('h_3')}</div>
                     <div className="cat_r_p bonus">
-                      {product.bonus} {t('h_4')}
+                      {formatPrice(product.bonus)} {t('h_4')}
                     </div>
                   </div>
                 </div>
@@ -170,7 +170,7 @@ export default function ProductDetail() {
                 <div className="cat_r">
                   <div className="cat_r_h">{t('h_6')}</div>
                   <div className="cat_r_p">
-                    {(product.price || 0) * count} {t('h_4')}
+                    {formatPrice((product.price || 0) * count)} {t('h_4')}
                   </div>
                 </div>
               </div>
@@ -178,7 +178,8 @@ export default function ProductDetail() {
               <div className="cat_bonus">
                 <div className="cat_h">{t('h_7')}</div>
                 <div className="cat_p">
-                  {user.summa || 0} {t('h_4')}
+                  <span className="bonus_val">{formatPrice(user.summa || 0)}</span>
+                  <span className="bonus_unit">{t('h_4')}</span>
                 </div>
               </div>
 
@@ -196,8 +197,9 @@ export default function ProductDetail() {
                 type="button"
                 onClick={addToCart}
                 className="cat_buy"
+                style={{ width: '100%', border: 'none', outline: 'none', cursor: 'pointer' }}
               >
-                {isInCart ? (user.lang === 'uz' ? 'Savatchaga o\'tish' : 'В корзину') : t('h_8')}
+                {t('h_8')}
               </button>
             </div>
           </div>

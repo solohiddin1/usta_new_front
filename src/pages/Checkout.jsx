@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { t, getUser, getStore } from '../i18n/translations';
+import { t, getUser, getStore, formatPrice } from '../i18n/translations';
 import { api, getImageUrl } from '../api/client';
 
 export default function Checkout() {
@@ -97,7 +97,7 @@ export default function Checkout() {
                     <div className="card_l_text">
                       <div className="card_l_h">{item.name}</div>
                       <div className="card_l_p">
-                        {item.price} {t('h_4')}
+                        {formatPrice(item.price)} {t('h_4')}
                       </div>
                     </div>
                   </div>
@@ -111,7 +111,7 @@ export default function Checkout() {
               ))}
 
               <div className="check_p">
-                {t('h_6')} {state.total}
+                {t('h_6')} {formatPrice(state.total)} {t('h_4')}
               </div>
             </div>
           </div>

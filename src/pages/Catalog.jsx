@@ -32,8 +32,18 @@ export default function Catalog() {
       const activeChatId = chatId || (storedUser && storedUser.chat_id);
       try {
         const res = await api.get(`/user/${activeChatId}`);
-        localStorage.setItem('user', JSON.stringify(res.data));
-        setStatus('ready');
+        // Ensure valid JSON object response with chat_id
+        if (res.data && typeof res.data === 'object' && (res.data.chat_id || res.data.id)) {
+          localStorage.setItem('user', JSON.stringify(res.data));
+          setStatus('ready');
+        } else {
+          console.error('Invalid user API response:', res.data);
+          if (!storedUser) {
+            setStatus('error');
+          } else {
+            setStatus('ready');
+          }
+        }
       } catch (err) {
         console.error('Failed to load user', err);
         if (!storedUser) {
@@ -52,9 +62,15 @@ export default function Catalog() {
     const fetchCategories = async () => {
       try {
         const res = await api.get('/product/categories/');
-        setCategories(res.data);
+        if (Array.isArray(res.data)) {
+          setCategories(res.data);
+        } else {
+          console.error('Invalid categories response (expected array):', res.data);
+          setCategories([]);
+        }
       } catch (err) {
         console.error('Failed to load categories', err);
+        setCategories([]);
       }
     };
 
@@ -84,26 +100,27 @@ export default function Catalog() {
           </div>
 
           <div className="col-12">
-            {categories?.map((cat, idx) => (
-              <div className="col-12" key={cat.id || idx}>
-                <Link
-                  to="/subs"
-                  state={{ category: cat.sub_categories, parent: cat.name }}
-                  className="h_l"
-                >
-                  <div className="h_l_name">{cat.name}</div>
-                  {cat.icon && (
-                    <img
-                      src={getImageUrl(cat.icon)}
-                      alt={cat.name}
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                      }}
-                    />
-                  )}
-                </Link>
-              </div>
-            ))}
+            {Array.isArray(categories) &&
+              categories.map((cat, idx) => (
+                <div className="col-12" key={cat.id || idx}>
+                  <Link
+                    to="/subs"
+                    state={{ category: cat.sub_categories, parent: cat.name }}
+                    className="h_l"
+                  >
+                    <div className="h_l_name">{cat.name}</div>
+                    {cat.icon && (
+                      <img
+                        src={getImageUrl(cat.icon)}
+                        alt={cat.name}
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    )}
+                  </Link>
+                </div>
+              ))}
           </div>
 
           <div className="col-12">

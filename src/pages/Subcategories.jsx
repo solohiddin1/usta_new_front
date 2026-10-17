@@ -41,7 +41,8 @@ export default function Subcategories() {
           </div>
 
           <div className="accordion">
-            {state.category?.map((item, idx) => {
+            {Array.isArray(state.category) &&
+              state.category.map((item, idx) => {
               const hasChildren = item.children && item.children.length > 0;
               const itemIdStr = String(item.id || idx);
               const isOpen = openAccordion === itemIdStr;

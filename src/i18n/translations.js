@@ -3,7 +3,7 @@ export const translations = {
     h_1: "Каталог",
     h_2: "Корзина",
     h_3: "Бонус",
-    h_4: "Сум",
+    h_4: "Балл",
     h_5: "Цена",
     h_6: "Итого:",
     h_7: "Доступный бонус",
@@ -21,7 +21,7 @@ export const translations = {
     h_1: "Katalog",
     h_2: "Savatcha",
     h_3: "Bonus",
-    h_4: "So'm",
+    h_4: "Ball",
     h_5: "Narxi",
     h_6: "Jami :",
     h_7: "Mavjud bonus",
@@ -43,6 +43,13 @@ export const t = (key) => {
   const lang = getLang();
   const dict = translations[lang] || translations.ru;
   return dict[key] || key;
+};
+
+export const formatPrice = (val) => {
+  if (val === null || val === undefined || val === '') return '0';
+  const parts = String(val).replace(/\s/g, '').split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0');
+  return parts.join('.');
 };
 
 export const getUser = () => {

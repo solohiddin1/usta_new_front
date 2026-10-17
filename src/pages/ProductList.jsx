@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
-import { t, getUser } from '../i18n/translations';
+import { t, getUser, formatPrice } from '../i18n/translations';
 import { api, getImageUrl } from '../api/client';
 
 export default function ProductList() {
@@ -14,10 +14,16 @@ export default function ProductList() {
     if (user && id) {
       api.get(`/product/products/${id}/${user.chat_id}/`)
         .then((res) => {
-          setProducts(res.data);
+          if (Array.isArray(res.data)) {
+            setProducts(res.data);
+          } else {
+            console.error('Invalid products response:', res.data);
+            setProducts([]);
+          }
         })
         .catch((err) => {
           console.error('Failed to fetch products', err);
+          setProducts([]);
         });
     }
   }, [id, user?.chat_id]);
@@ -53,7 +59,8 @@ export default function ProductList() {
           </div>
 
           <div className="col-12">
-            {products?.map((prod) => {
+            {Array.isArray(products) &&
+              products.map((prod) => {
               const rawImg = prod.images && prod.images.length > 0 ? prod.images[0].image : '';
               const mainImage = rawImg ? getImageUrl(rawImg) : '/img/placeholder.svg';
               return (
@@ -75,7 +82,7 @@ export default function ProductList() {
                     <div className="pr_img_info">
                       <div className="pr_img_h">{prod.name}</div>
                       <div className="pr_img_h_2">{t('h_3')}</div>
-                      <div className="pr_img_h_3">{prod.bonus} {t('h_4')}</div>
+                      <div className="pr_img_h_3">{formatPrice(prod.bonus)} {t('h_4')}</div>
                     </div>
                   </div>
 
@@ -83,7 +90,8 @@ export default function ProductList() {
                     <div className="pr_r_text">
                       <div className="pr_r_h">{t('h_5')}</div>
                       <div className="pr_r_p">
-                        {prod.price} <span>{t('h_4')}</span>
+                        <span className="price_val">{formatPrice(prod.price)}</span>
+                        <span className="price_unit">{t('h_4')}</span>
                       </div>
                     </div>
                     <div className={prod.has_in_cart ? 'pr_r_img_2' : 'pr_r_img'}>

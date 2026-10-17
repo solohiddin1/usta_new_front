@@ -113,7 +113,7 @@ export default function SelectStore() {
                   zoom={13}
                   scrollWheelZoom={false}
                   ref={mapRef}
-                  style={{ height: '400px', width: '100%', borderRadius: 12 }}
+                  style={{ height: '260px', width: '100%', borderRadius: 12 }}
                 >
                   <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

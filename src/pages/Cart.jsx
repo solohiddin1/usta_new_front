@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { t, getUser, getStore } from '../i18n/translations';
+import { t, getUser, getStore, formatPrice } from '../i18n/translations';
 import { api, getImageUrl } from '../api/client';
 
 export default function Cart() {
@@ -13,15 +13,21 @@ export default function Cart() {
     if (!user) return;
     api.get(`/product/my-cart/${user.chat_id}/`)
       .then((res) => {
-        const items = res.data.map((x) => ({
-          ...x,
-          quantity: x.count,
-          image: x.image ? getImageUrl(x.image) : '/img/placeholder.svg',
-        }));
-        setCartItems(items);
+        if (Array.isArray(res.data)) {
+          const items = res.data.map((x) => ({
+            ...x,
+            quantity: x.count,
+            image: x.image ? getImageUrl(x.image) : '/img/placeholder.svg',
+          }));
+          setCartItems(items);
+        } else {
+          console.error('Invalid cart response:', res.data);
+          setCartItems([]);
+        }
       })
       .catch((err) => {
         console.error('Failed to fetch cart', err);
+        setCartItems([]);
       });
   };
 
@@ -82,8 +88,8 @@ export default function Cart() {
     if (totalSum > (user.summa || 0)) {
       e.preventDefault();
       const msg = user.lang === 'uz'
-        ? "Bonus summangiz buyurtmani jami summasidan katta bulishi kerak!"
-        : "Сумма вашего бонуса должна быть больше, чем общая сумма заказа!";
+        ? "Bonus ballingiz buyurtmaning jami ballidan katta bo'lishi kerak!"
+        : "Количество ваших бонусных баллов должно быть больше общей суммы заказа!";
       alert(msg);
       return;
     }
@@ -140,7 +146,8 @@ export default function Cart() {
             )}
 
             <div className="col-12">
-              {cartItems.map((item) => (
+              {Array.isArray(cartItems) &&
+                cartItems.map((item) => (
                 <div className="card_main" key={item.id}>
                   <div className="card_l">
                     <div className="card_l_img">
@@ -156,7 +163,7 @@ export default function Cart() {
                     <div className="card_l_text">
                       <div className="card_l_h">{item.name}</div>
                       <div className="card_l_p">
-                        {t('h_5')} {item.price} {t('h_4')}
+                        {t('h_5')} {formatPrice(item.price)} {t('h_4')}
                       </div>
                     </div>
                   </div>
@@ -194,7 +201,7 @@ export default function Cart() {
               {t('h_6')} {totalCount}
             </div>
             <div className="card_down_p">
-              {totalSum} <span>{t('h_4')}</span>
+              {formatPrice(totalSum)} <span>{t('h_4')}</span>
             </div>
           </div>
 

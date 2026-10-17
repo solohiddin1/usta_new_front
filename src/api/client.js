@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { getLang } from '../i18n/translations';
 
-// If VITE_API_URL is set to a full URL (e.g. https://leobonus.uz), use it.
-// If VITE_API_URL is empty or relative, requests go to same origin and are proxied by Vite to http://127.0.0.1:8000.
-const rawBase = import.meta.env.VITE_API_URL;
-const BASE_URL = rawBase !== undefined ? rawBase : '';
+// If VITE_BACKEND_URL or VITE_API_URL is set (e.g. in .env), use it.
+// If not set, requests use relative paths (same origin).
+const rawBase = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_URL;
+const BASE_URL = rawBase ? rawBase.trim() : '';
 
 export const getApiUrl = (path) => {
   const lang = getLang();
@@ -18,7 +18,7 @@ export const getApiUrl = (path) => {
 export const getImageUrl = (url) => {
   if (!url) return '';
   // If the backend returns a URL with localhost or 127.0.0.1, convert to relative /media/
-  // so the request travels via the ngrok HTTPS domain and is proxied to Django.
+  // so the request travels via the ngrok/domain proxy to Django.
   if (url.includes('localhost') || url.includes('127.0.0.1')) {
     const mediaIdx = url.indexOf('/media/');
     if (mediaIdx !== -1) {
